@@ -13,7 +13,7 @@
 ######################################
 # target
 ######################################
-TARGET = test
+TARGET = IO_Board_ver.1.1_program
 
 
 ######################################
@@ -37,7 +37,8 @@ BUILD_DIR = build
 # C sources
 C_SOURCES =  \
 Drivers/CMSIS/Device/ST/STM32F1xx/Source/Templates/system_stm32f1xx.c \
-$(wildcard src/*.c)
+$(wildcard src/*.c) \
+$(sildcard src/peripheral/*.c)
 #Src/system_stm32f1xx.c  
 #Src/main.c \
 #Src/stm32f1xx_it.c \
@@ -58,7 +59,8 @@ $(wildcard src/*.c)
 
 # C++ sources
 CPP_SOURCES = \
-$(wildcard src/*.cpp)
+$(wildcard src/*.cpp) \
+$(wildcard src/peripheral/*.cpp)
 
 # ASM sources
 ASM_SOURCES =  \
