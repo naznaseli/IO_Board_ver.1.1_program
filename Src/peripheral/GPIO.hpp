@@ -92,7 +92,7 @@ enum JTAG_SWD_MODE
     FULL_SWJ = 0x0, FULL_SWJ_NO_JNTRST = 0x1, SWDP = 0x2, DISABLE = 0x4
 };
 
-//TODO:setAlternate実装
+//TODO:setAlternate
 extern void setAlternate_CAN(GPIO_TypeDef* gpioRx, uint8_t pinRx, GPIO_TypeDef* gpioTx, uint8_t pinTx);
 extern void setAlternate_JTAG_SWD(JTAG_SWD_MODE mode);
 extern void setAlternate_ADC(GPIO_TypeDef* gpioRx, uint8_t pinRx, GPIO_TypeDef* gpioTx, uint8_t pinTx);
@@ -134,5 +134,4 @@ public:
 private:
     GPIO_TypeDef* GPIOx;
     uint8_t pin;
-    
 };

@@ -57,7 +57,8 @@
 #define CAN1_BTR_BRP_Msk    CAN_BTR_BRP_Msk
 
 #ifdef __cplusplus
-extern "C"{
+extern "C"
+{
 #endif
 void USB_HP_CAN_TX_IRQHandler(void);
 void USB_LP_CAN_RX0_IRQHandler(void);
@@ -76,9 +77,11 @@ typedef struct
     uint8_t Data[8];
 }CanMsg;
 
-class bxCAN{
+class bxCAN
+{
 public:
-    enum Mode{ //動作モード
+    enum Mode
+    {   //動作モード
         INITIALIZATION, //SLAK=0, INAK=1
         NORMAL,         //SLAK=0, SLAK=0
         SLEEP,          //SLAK=1, SLAK=0

@@ -163,10 +163,12 @@ int USART::putchar_(uint8_t c)
     if(m_modeTx == DEFAULT)
     {
         return default_putchar(c);
-    }else if(m_modeTx == QUEUE)
+    }
+    else if(m_modeTx == QUEUE)
     {
         //return queue_putchar(c);
-    }else if(m_modeTx == DMA)
+    }
+    else if(m_modeTx == DMA)
     {
         //return dma_putchar(c);
     }
@@ -178,10 +180,12 @@ int USART::getchar_(void)
     if(m_modeRx == DEFAULT)
     {
         return default_getchar();
-    }else if(m_modeRx == QUEUE)
+    }
+    else if(m_modeRx == QUEUE)
     {
         //return queue_getchar();
-    }else if(m_modeRx == DMA)
+    }
+    else if(m_modeRx == DMA)
     {
         //return dma_getchar();
     }
@@ -193,10 +197,12 @@ int USART::write(const uint8_t* data, int size)
     if(m_modeTx == DEFAULT)
     {
         return default_write(data, size);
-    }else if(m_modeTx == QUEUE)
+    }
+    else if(m_modeTx == QUEUE)
     {
         //return queue_write(data, size);
-    }else if(m_modeTx == DMA)
+    }
+    else if(m_modeTx == DMA)
     {
         //return dma_write(data, size);
     }
@@ -208,10 +214,12 @@ int USART::read(uint8_t* data, int size)
     if(m_modeRx == DEFAULT)
     {
         return default_read(data, size);
-    }else if(m_modeRx == QUEUE)
+    }
+    else if(m_modeRx == QUEUE)
     {
         //return queue_read(data, size);
-    }else if(m_modeRx == DMA)
+    }
+    else if(m_modeRx == DMA)
     {
         //return dma_read(data, size);
     }
@@ -223,10 +231,12 @@ int USART::printf(const char* format, ...)
     if(m_modeTx == DEFAULT)
     {
         return default_printf(format);
-    }else if(m_modeTx == QUEUE)
+    }
+    else if(m_modeTx == QUEUE)
     {
         //return queue_printf(format);
-    }else if(m_modeTx == DMA)
+    }
+    else if(m_modeTx == DMA)
     {
         //return dma_printf(format);
     }

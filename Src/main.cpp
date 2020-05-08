@@ -1,26 +1,27 @@
 #include "IO_Board.hpp"
 
 IO_Board* board;
-//Controller* controller;
 
 int main(void)
 {
-    //board = new IO_Board();
-    //board.setupPeripheral();
-
-    //回路initialized
+    board = new IO_Board();
+    board->setupPeripheral();
 
     //DIPスイッチ読み取り
+    board->dipSw = (dip[0].read()) | (dip[1].read() << 1) | (dip[2].read() << 2) | (dip[3].read() << 3);
 
     //割り込み開始->上のセットアップ関数内でもいいかも
+    //tim1.enable
+
+    led.write(1);
 
     while(1)
     {
-
+        board->cycle();
     }
 }
 
-void interrupt_1ms(void)
+void interrupt(void)
 {
     //ProtectInterrupt pi;
 
@@ -31,20 +32,5 @@ void interrupt_1ms(void)
         cnt = 0;
     }
 
-    //circuit->interrupt_1ms();
-}
-
-void interrupt_10ms(void)
-{
-    //circuit->interrupt_10ms();
-    static uint16_t cnt = 0;
-    if(++cnt >= 100)
-    {
-        cnt = 0;
-    }
-
-    //センサ読み取り
-
-    //CAN周期送信
-
+    board->interrupt();
 }
