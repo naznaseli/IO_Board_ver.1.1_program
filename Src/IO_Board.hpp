@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <stddef.h>
 #include "./peripheral/RCC.hpp"
 #include "./peripheral/GPIO.hpp"
 #include "./peripheral/TIM.hpp"
@@ -17,11 +18,13 @@ extern "C"
 }
 #endif
 
+#define BASE_ADDRESS_IO     0x10
+
 extern GPIO io[16];
 extern GPIO led;
 extern GPIO dip[4];
 extern GPIO swdio, swclk;
-//extern TIM tim1;
+extern TIM tim3;
 //extern USART usart1;
 //extern bxCAN can1;
 
@@ -35,20 +38,25 @@ public:
 
     void cycleTransmit(void);
 
-    unsigned int m_delayCnt = 0;
     void delay_us(uint16_t us);
     void delay_ms(uint16_t ms);
-    unsigned int m_buzzerCnt = 0;
     void buzzer(uint16_t ms);
 
-    unsigned long long int millis(void);
+    //! 経過時間
+    //unsigned long long int millis(void);
+    size_t millis(void);
 
+    //! 周期動作関数
     void cycle(void);
     void interrupt(void);
 
-    uint8_t dipSw;
+    uint16_t canSid;
 
 private:
+    uint16_t m_delayCnt;
+    uint16_t m_buzzerCnt;
+    size_t m_elapsedTime;
+
     void RCC_Setup(void);
     void GPIO_Setup(void);
     void TIM_Setup(void);
