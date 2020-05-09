@@ -104,10 +104,7 @@ AS_INCLUDES =
 C_INCLUDES =  \
 -IInc \
 -IDrivers/CMSIS/Device/ST/STM32F1xx/Include \
--IDrivers/CMSIS/Include \
 -IDrivers/CMSIS/Include
-#-IDrivers/STM32F1xx_HAL_Driver/Inc \
-#-IDrivers/STM32F1xx_HAL_Driver/Inc/Legacy \
 
 # C++ includes
 CPP_INCLUDES = \
@@ -133,7 +130,7 @@ CPPFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 # LDFLAGS
 #######################################
 # link script
-LDSCRIPT = STM32F103C8Tx_FLASH.ld
+LDSCRIPT = STM32F103C8TX_FLASH.ld
 
 # libraries
 LIBS = -lc -lm -lnosys -lstdc++

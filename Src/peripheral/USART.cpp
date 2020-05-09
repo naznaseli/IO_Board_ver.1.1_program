@@ -24,28 +24,14 @@ void USART::setup(
         uint32_t baudrate)
 {
     USARTx = usart;
-    //tx->setup(gpioTx, pinTx, GPIO::FLOATING);
-    //rx->setup(gpioRx, pinRx, GPIO::FLOATING);
     tx = new GPIO(gpioTx, pinTx, GPIO::ALT_PUSHPULL);
     rx = new GPIO(gpioRx, pinRx, GPIO::ALT_PUSHPULL);
     m_modeTx = modeTx;
     m_modeRx = modeRx;
 
     enableClock();
-    //まず確認
-    //:**********************************************************************    //clock enable
-    //if(USARTx == USART1){
-    //    RCC->APB2ENR |= RCC_APB2ENR_USART1EN;
-    //}
-    //if(USARTx == USART2){
-    //    RCC->APB1ENR |= RCC_APB1ENR_USART2EN;
-    //}
-    //if(USARTx == USART3){
-    //    RCC->APB1ENR |= RCC_APB1ENR_USART3EN;
-    //}
-    //:**********************************************************************    //clock enable
     
-    //ピンのりマップ確認
+    //ピンのremap確認
     
     //if(m_modeTx == DEFAULT){
     //}else if(m_modeTx == QUEUE){
@@ -66,15 +52,16 @@ void USART::setup(
 
     //USART1 remap config
     //PB6,PB7
-    //if(tx->GPIOx == GPIOB && tx->pin == 6 && rx->GPIOx == GPIOB && rx->pin == 7){
-    //    //remap configuration
-    //    //USART1はデフォルトでremapされている(?)
-    //    //2019/05/08　データシート見たけどリセット状態で0って書いてある
-    //    AFIO->MAPR |= AFIO_MAPR_USART1_REMAP;
-    //}else{
-    //    AFIO->MAPR &= ~(AFIO_MAPR_USART1_REMAP);
-    //}
-    AFIO->MAPR |= AFIO_MAPR_USART1_REMAP;
+    if(tx->GPIOx == GPIOB && tx->pin == 6 && rx->GPIOx == GPIOB && rx->pin == 7)
+    {
+        //remap configuration
+        //USART1はデフォルトでremapされている(?)
+        //2019/05/08　データシート見たけどリセット状態で0って書いてある
+        AFIO->MAPR |= AFIO_MAPR_USART1_REMAP;
+    }else{
+        AFIO->MAPR &= ~(AFIO_MAPR_USART1_REMAP);
+    }
+    //AFIO->MAPR |= AFIO_MAPR_USART1_REMAP;
 
     //ここ抽象化
     //ストップビットとかパリティとか設定するprivate関数
@@ -91,7 +78,6 @@ void USART::setup(
         USARTx->CR1 |= USART_CR1_RE;
         //enableRx();
     }
-
 }
 
 void USART::remap(
@@ -125,37 +111,16 @@ void USART::remap(
 
 void USART::enableClock(void)
 {
-    if(USARTx == USART1)
-    {
-        //RCC->APB2ENR |= RCC_APB2ENR_USART1EN;
-        writeBit(RCC, APB2ENR, USART1EN, 1);
-    }
-    if(USARTx == USART2)
-    {
-        //RCC->APB1ENR |= RCC_APB1ENR_USART2EN;
-        writeBit(RCC, APB1ENR, USART2EN, 1);
-    }
-    if(USARTx == USART3)
-    {
-        //RCC->APB1ENR |= RCC_APB1ENR_USART3EN;
-        writeBit(RCC, APB1ENR, USART3EN, 1);
-    }
+    if(USARTx == USART1) writeBit(RCC, APB2ENR, USART1EN, 1);   //RCC->APB2ENR |= RCC_APB2ENR_USART1EN;
+    if(USARTx == USART2) writeBit(RCC, APB1ENR, USART2EN, 1);   //RCC->APB1ENR |= RCC_APB1ENR_USART2EN;
+    if(USARTx == USART3) writeBit(RCC, APB1ENR, USART3EN, 1);   //RCC->APB1ENR |= RCC_APB1ENR_USART3EN;
 }
 
 void USART::disableClock(void)
 {
-    if(USARTx == USART1)
-    {
-        writeBit(RCC, APB2ENR, USART1EN, 0);
-    }
-    if(USARTx == USART2)
-    {
-        writeBit(RCC, APB1ENR, USART2EN, 0);
-    }
-    if(USARTx == USART3)
-    {
-        writeBit(RCC, APB1ENR, USART3EN, 0);
-    }
+    if(USARTx == USART1) writeBit(RCC, APB2ENR, USART1EN, 0);
+    if(USARTx == USART2) writeBit(RCC, APB1ENR, USART2EN, 0);
+    if(USARTx == USART3) writeBit(RCC, APB1ENR, USART3EN, 0);
 }
 
 int USART::putchar_(uint8_t c)
@@ -244,6 +209,8 @@ int USART::printf(const char* format, ...)
 }
 
 //:**********************************************************************
+//! default
+//:**********************************************************************
 int USART::default_putchar(uint8_t c)
 {
     while((USARTx->SR & USART_SR_TC) == 0);
@@ -299,7 +266,13 @@ int USART::default_printf(const char* format, ...)
 }
 
 //:**********************************************************************
+//! queue
+//:**********************************************************************
 //int USART::queue_putchar()
 //{
 //    
 //}
+
+//:**********************************************************************
+//! DMA
+//:**********************************************************************
