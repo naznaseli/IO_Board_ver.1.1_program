@@ -7,8 +7,7 @@
 #define readBit(PERIPH, REG, SYM)       (((PERIPH->REG)&PERIPH##_##REG##_##SYM##_Msk)>>PERIPH##_##REG##_##SYM##_Pos)
 #define readReg(PERIPH, REG)  ()
 
-extern void interrupt_1ms(void);
-extern void interrupt_10ms(void);
+extern void interrupt(void);
 
 void TIM1_IRQHandler(void);
 void TIM2_IRQHandler(void);
@@ -28,13 +27,12 @@ void TIM2_IRQHandler(void)
 void TIM3_IRQHandler(void)
 {
     TIM3->SR = 0;
-    interrupt_1ms();
+    interrupt();
 }
 
 void TIM4_IRQHandler(void)
 {
     TIM4->SR = 0;
-    interrupt_10ms();
 }
 
 void TIM::setup(TIM_TypeDef* tim, Mode mode)

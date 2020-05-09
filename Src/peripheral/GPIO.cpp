@@ -9,6 +9,11 @@
 //extern void setAlternate_CAN();
 void setAlternate_JTAG_SWD(JTAG_SWD_MODE mode);
 
+GPIO::GPIO()
+{
+
+}
+
 GPIO::GPIO(GPIO_TypeDef* gpio, uint8_t pin, Mode mode)
 {
     setup(gpio, pin, mode);
@@ -60,7 +65,8 @@ void GPIO::setup(GPIO_TypeDef* gpio, uint8_t pin, Mode mode)
                 break;
             default: break;
         }
-    }else
+    }
+    else
     {
         GPIOx->CRH &= ~(0xF << (pin-8)*4);
         switch(mode)
@@ -131,5 +137,4 @@ void GPIO::toggle(void)
 {
     if(read()) write(0);
     else write(1);
-    
 }
