@@ -130,8 +130,8 @@ public:
     uint8_t read(void);
     void write(uint8_t value);
     void toggle(void);
-    
-private:
+
     GPIO_TypeDef* GPIOx;
     uint8_t pin;
+    
 };

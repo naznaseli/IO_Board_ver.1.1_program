@@ -18,14 +18,15 @@ extern "C"
 }
 #endif
 
+#define IO_NUM              16
 #define BASE_ADDRESS_IO     0x10
 
-extern GPIO io[16];
+extern GPIO io[IO_NUM];
 extern GPIO led;
 extern GPIO dip[4];
 extern GPIO swdio, swclk;
 extern TIM tim3;
-//extern USART usart1;
+extern USART usart1;
 //extern bxCAN can1;
 
 class IO_Board
@@ -36,15 +37,13 @@ public:
     void setupPeripheral(void);
     void setupInterface(void);
 
-    void cycleTransmit(void);
+    //void cycleTransmit(void);
+    //! 経過時間
+    size_t millis(void);
 
     void delay_us(uint16_t us);
     void delay_ms(uint16_t ms);
     void buzzer(uint16_t ms);
-
-    //! 経過時間
-    //unsigned long long int millis(void);
-    size_t millis(void);
 
     //! 周期動作関数
     void cycle(void);
@@ -53,10 +52,11 @@ public:
     uint16_t canSid;
 
 private:
+    size_t m_elapsedTime;
     uint16_t m_delayCnt;
     uint16_t m_buzzerCnt;
-    size_t m_elapsedTime;
 
+    //! setup function
     void RCC_Setup(void);
     void GPIO_Setup(void);
     void TIM_Setup(void);

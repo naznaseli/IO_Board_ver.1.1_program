@@ -5,8 +5,6 @@
 #include "RCC.hpp"
 #include "GPIO.hpp"
 
-//TXだけDMAにしたい時どうする
-
 class USART
 {
 public:
