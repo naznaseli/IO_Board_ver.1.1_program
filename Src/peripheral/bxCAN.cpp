@@ -57,7 +57,6 @@ void bxCAN::setup(
     //CANx->IER |= CAN_IER_ERRIE;
 
     if(CANx == CAN1) can1_setup(baudrate);
-
 }
 
 void bxCAN::enableClock(void)
@@ -145,35 +144,38 @@ void bxCAN::modeTransition(Mode mode)
 {
     switch(mode)
     {
-        case SLEEP:
-            break;
+    case SLEEP:
+        break;
 
-        case INITIALIZATION:
-            if(CANx->MSR & CAN_MSR_SLAK)    //if sleep mode now
-                CANx->MCR &= ~(CAN_MCR_SLEEP);
-            CANx->MCR |= CAN_MCR_INRQ;
-            while(((CANx->MSR & CAN_MSR_INAK) != CAN_MSR_INAK) || ((CANx->MSR & CAN_MSR_SLAK) == CAN_MSR_SLAK));
-            //if(CANx == CAN1){
-            //    writeBit(CAN1, MCR, SLEEP, 0);
-            //    writeBit(CAN1, MCR, INRQ, 1);
-            //    while(read(CAN1, MSR, INAK) || read(CAN1, MSR, SLAK));
-            //}
-            break;
+    case INITIALIZATION:
+        if(CANx->MSR & CAN_MSR_SLAK)    //if sleep mode now
+            CANx->MCR &= ~(CAN_MCR_SLEEP);
+        CANx->MCR |= CAN_MCR_INRQ;
+        while(((CANx->MSR & CAN_MSR_INAK) != CAN_MSR_INAK) || ((CANx->MSR & CAN_MSR_SLAK) == CAN_MSR_SLAK));
+        //if(CANx == CAN1){
+        //    writeBit(CAN1, MCR, SLEEP, 0);
+        //    writeBit(CAN1, MCR, INRQ, 1);
+        //    while(read(CAN1, MSR, INAK) || read(CAN1, MSR, SLAK));
+        //}
+        break;
 
-        case NORMAL:
-            if(CANx->MSR & CAN_MSR_SLAK)    //if sleep mode now
-                CANx->MCR &= ~(CAN_MCR_SLEEP);
-            CANx->MCR &= ~(CAN_MCR_INRQ);
-            while(((CANx->MSR & CAN_MSR_INAK) == CAN_MSR_INAK) || ((CANx->MSR & CAN_MSR_SLAK) == CAN_MSR_SLAK));
-            break;
+    case NORMAL:
+        if(CANx->MSR & CAN_MSR_SLAK)    //if sleep mode now
+            CANx->MCR &= ~(CAN_MCR_SLEEP);
+        CANx->MCR &= ~(CAN_MCR_INRQ);
+        while(((CANx->MSR & CAN_MSR_INAK) == CAN_MSR_INAK) || ((CANx->MSR & CAN_MSR_SLAK) == CAN_MSR_SLAK));
+        break;
 
-        default: break;
+    default:
+        break;
     }
 }
 
 //only STDID
 void bxCAN::send(uint16_t id, uint8_t length, uint8_t data[8])
 {
+    //初期化されていなかったら
+    //return;
     //メッセージ作成
     CanMsg txMessage;
     txMessage.StdId = 0;
@@ -213,16 +215,14 @@ void bxCAN::can_transmit(CanMsg* txMessage)
         transmitMailbox = 2;
     }
 
-    //標準
-    if(txMessage->IDE == 0) //標準ID
-    {
-        //STDID
+    if(txMessage->IDE == 0)
+    {   //STDID
         CANx->sTxMailBox[transmitMailbox].TIR |=
                         ((txMessage->StdId << CAN_TI0R_STID_Pos) |
                         (txMessage->RTR << CAN_TI0R_RTR_Pos));
-    }else
-    {
-        //EXTID
+    }
+    else
+    {   //EXTID
         CANx->sTxMailBox[transmitMailbox].TIR |=
                         ((txMessage->ExtId << CAN_TI0R_STID_Pos) |
                         (txMessage->IDE << CAN_TI0R_IDE_Pos) |

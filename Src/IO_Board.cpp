@@ -1,15 +1,12 @@
 #include "IO_Board.hpp"
-//#include <machine.h>
 
-//! GPIOピン
 GPIO io[IO_NUM];
-////! LED
 GPIO led;
 GPIO dip[4];
 GPIO swdio, swclk;
 TIM tim3;
 USART usart1;
-//bxCAN can1;
+bxCAN can1;
 
 //__io_getchar(void);
 //__io_putchar(int ch);
@@ -112,24 +109,39 @@ void IO_Board::USART_Setup(void)
 void IO_Board::bxCAN_Setup(void)
 {
     //500kbps
-    //can1.setup(CAN1, bxCAN::NORMAL, PA11, PA12, 500);
-}
-
-void IO_Board::IWDG_Setup(void)
-{
-
+    can1.setup(CAN1, bxCAN::NORMAL, PA11, PA12, 500);
 }
 
 void IO_Board::delay_us(uint16_t us)
 {
-    //nop();
+#if 1
+    while (us--)
+    {
+        asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");
+        asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");
+        asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");
+        asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");
+        asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");
+        asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");
+        asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");asm("NOP");
+        asm("NOP");asm("NOP");
+    }
+#endif
+
+    ////uint16_t delay = SYSCLK / (10 * 10 * 10 * 10 * 10 * 10);
+    //uint16_t delay = 72;
+    //for(int i = 0; i < delay; i++)
+    //{
+    //    asm("NOP");
+    //}
 
 }
 
 void IO_Board::delay_ms(uint16_t ms)
 {
     m_delayCnt = ms;
-    while(m_delayCnt);
+    while (m_delayCnt);
+    //while(m_delayCnt != 0);
 }
 
 size_t IO_Board::millis(void)
@@ -140,14 +152,19 @@ size_t IO_Board::millis(void)
 //! 周期動作関数
 void IO_Board::cycle(void)
 {
-
+    IWDG_Reset();
+    //led.toggle();
+    delay_ms(10);
+    usart1.printf("echo\n");
 }
 
 void IO_Board::interrupt(void)
 {
     m_elapsedTime++;
-    if(m_delayCnt) m_delayCnt--;
-    if(m_buzzerCnt) m_buzzerCnt--;
+    if (m_delayCnt) m_delayCnt--;
+    if (m_buzzerCnt) m_buzzerCnt--;
+
+    //usart1.printf("%u\n", m_delayCnt);
 
     static uint16_t cnt = 0;
     if (++cnt >= 100)
@@ -158,23 +175,33 @@ void IO_Board::interrupt(void)
     
     //センサ読み取り
     uint16_t ioVal = 0;
-    for(int i = 0; i < IO_NUM; i++)
+    for (int i = 0; i < IO_NUM; i++)
     {
         ioVal += ((io[i].read() & 0x01) << i);
     }
+    
+    uint8_t data[2];
+    data[0] = ioVal & 0x0F;
+    data[1] = (ioVal >> 8) & 0x0F;
 
     //debug print
+#if 0
     static uint16_t cnt2 = 0;
     if (++cnt2 >= 100)
     {
         cnt2 = 0;
-        for(int i = 0; i < IO_NUM; i++)
+        for (int i = 0; i < IO_NUM; i++)
         {
             usart1.printf("%u", (ioVal >> i) & 0x01);
         }
         usart1.printf("\n");
     }
+#endif
 
     //CAN送信
+    //base address 0x200 0x200台は使える
+    //1枚当たり2個のID IO基板->制御基板　と　制御基板->IO基板
+    //0x200(dipSw == 0), 0x202(dipSw == 1), 0x204(dipSw == 2), 0x206(dipSw == 3)...
+    can1.send(canId, 2, data);
 
 }
