@@ -117,7 +117,7 @@ void setAlternate_JTAG_SWD(JTAG_SWD_MODE mode)
 {
     //一度リセット
     AFIO->MAPR &= ~AFIO_MAPR_SWJ_CFG;
-    AFIO->MAPR |= mode & 0x7;
+    AFIO->MAPR |= (mode & 0x7) << AFIO_MAPR_SWJ_CFG_Pos;
 }
 
 uint8_t GPIO::read(void)

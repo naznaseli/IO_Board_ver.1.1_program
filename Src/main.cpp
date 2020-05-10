@@ -18,8 +18,8 @@ int main(void)
     tim3.enableCount();
 
     led.write(1);
-    for(int i = 8; i < 16; i++)
-        io[i].write(1);
+    //for(int i = 8; i < 16; i++)
+    //    io[i].write(1);
 
     while(1)
     {

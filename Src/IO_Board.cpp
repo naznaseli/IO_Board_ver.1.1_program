@@ -83,15 +83,6 @@ void IO_Board::GPIO_Setup(void)
     io[14].setup(PB3, GPIO::FLOATING);
     io[15].setup(PA15, GPIO::FLOATING);
 
-    //io[8].setup(PB9, GPIO::PUSHPULL);
-    //io[9].setup(PB8, GPIO::PUSHPULL);
-    //io[10].setup(PB7, GPIO::PUSHPULL);
-    //io[11].setup(PB6, GPIO::PUSHPULL);
-    //io[12].setup(PB5, GPIO::PUSHPULL);
-    //io[13].setup(PB4, GPIO::PUSHPULL);
-    //io[14].setup(PB3, GPIO::PUSHPULL);
-    //io[15].setup(PA15, GPIO::PUSHPULL);
-
     //LED
     led.setup(PB11, GPIO::PUSHPULL);
 
