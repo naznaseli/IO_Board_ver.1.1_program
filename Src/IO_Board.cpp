@@ -101,7 +101,7 @@ void IO_Board::GPIO_Setup(void)
 void IO_Board::TIM_Setup(void)
 {
     //1ms interrupt
-    tim3.setupTimer(TIM3, 12, 1000000);
+    tim3.setupTimer(TIM3, 12, 10000000);
 }
 
 void IO_Board::USART_Setup(void)
