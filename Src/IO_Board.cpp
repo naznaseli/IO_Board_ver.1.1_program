@@ -140,8 +140,8 @@ void IO_Board::delay_us(uint16_t us)
 void IO_Board::delay_ms(uint16_t ms)
 {
     m_delayCnt = ms;
-    while (m_delayCnt);
-    //while(m_delayCnt != 0);
+    //while (m_delayCnt);
+    //while (m_delayCnt != 0);
 }
 
 size_t IO_Board::millis(void)
