@@ -9,13 +9,13 @@
 void USB_HP_CAN_TX_IRQHandler(void)
 {
     printf("tx.\n");
-
 }
+
 void USB_LP_CAN_RX0_IRQHandler(void)
 {
     printf("received0.\n");
-
 }
+
 void CAN_RX1_IRQHandler(void)
 {
     printf("received1.\n");
@@ -44,17 +44,14 @@ void bxCAN::setup(
     remap(gpioRx, pinRx, gpioTx, pinTx);
 
     enableClock();
-    //if(CANx == CAN1){
-    //    NVIC_EnableIRQ(USB_LP_CAN1_RX0_IRQn);
-    //    NVIC_EnableIRQ(CAN1_RX1_IRQn);
-    //}
-//  USB_LP_CAN1_RX0_IRQn        = 20,     /*!< USB Device Low Priority or CAN1 RX0 Interrupts       */
-//  CAN1_RX1_IRQn               = 21,     /*!< CAN1 RX1 Interrupt                                   */
-//  CAN1_SCE_IRQn               = 22,     /*!< CAN1 SCE Interrupt                                   */
+    if(CANx == CAN1){
+        NVIC_EnableIRQ(USB_LP_CAN1_RX0_IRQn);
+        NVIC_EnableIRQ(CAN1_RX1_IRQn);
+    }
 
     //割り込み許可
-    //CANx->IER |= (CAN_IER_FOVIE0 | CAN_IER_FFIE0 | CAN_IER_FMPIE0);
-    //CANx->IER |= CAN_IER_ERRIE;
+    CANx->IER |= (CAN_IER_FOVIE0 | CAN_IER_FFIE0 | CAN_IER_FMPIE0);
+    CANx->IER |= CAN_IER_ERRIE;
 
     if(CANx == CAN1) can1_setup(baudrate);
 }
@@ -107,12 +104,31 @@ void bxCAN::can1_setup(uint16_t baudrate)
 
     //モード
     CAN1->BTR |= CAN_BTR_LBKM;  //ループバックモード
-    //CAN1->BTR |= CAN_BTR_SILM;  //サイレントモード
+    CAN1->BTR |= CAN_BTR_SILM;  //サイレントモード
     //writeBit(CAN1, BTR, LBKM);
     //writeBit(CAN1, BTR, SILM);
 
     //フィルタ
-    //フィルタ設定しないと受信できない可能性
+    CAN1->FMR = CAN_FMR_FINIT;
+
+    //フィルタバンクの構成
+    //IDリストモード
+    CAN1->FMR |= CAN_FM1R_FBM0;
+
+    //16bit x 2
+    CAN1->FS1R &= ~(CAN_FS1R_FSC0);
+
+    //フィルタをFIFO0に設定
+    CAN1->FFA1R &= ~(CAN_FFA1R_FFA0);
+
+    CAN1->sFilterRegister[0].FR1 = 512 << 5;
+    //CAN1->FR = 512;   //フィルタそのもの = board->canId;
+
+    CAN1->FA1R = 1;     //フィルタをアクティブに
+
+    //フィルタの割り込み許可
+
+    //フィルタ設定完了
     CAN1->FMR &= ~(CAN_FMR_FINIT);
 
     //通常モード移行
@@ -207,10 +223,12 @@ void bxCAN::can_transmit(CanMsg* txMessage)
     if(CANx->TSR & CAN_TSR_TME0)
     {
         transmitMailbox = 0;
-    }else if(CANx->TSR & CAN_TSR_TME1)
+    }
+    else if(CANx->TSR & CAN_TSR_TME1)
     {
         transmitMailbox = 1;
-    }else if(CANx->TSR & CAN_TSR_TME2)
+    }
+    else if(CANx->TSR & CAN_TSR_TME2)
     {
         transmitMailbox = 2;
     }

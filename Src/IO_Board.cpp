@@ -98,7 +98,7 @@ void IO_Board::GPIO_Setup(void)
 void IO_Board::TIM_Setup(void)
 {
     //1ms interrupt
-    tim3.setupTimer(TIM3, 12, 10000000);
+    tim3.setupTimer(TIM3, 12, 1000000);
 }
 
 void IO_Board::USART_Setup(void)
@@ -140,7 +140,7 @@ void IO_Board::delay_us(uint16_t us)
 void IO_Board::delay_ms(uint16_t ms)
 {
     m_delayCnt = ms;
-    //while (m_delayCnt);
+    while (m_delayCnt);
     //while (m_delayCnt != 0);
 }
 
@@ -154,8 +154,24 @@ void IO_Board::cycle(void)
 {
     IWDG_Reset();
     //led.toggle();
-    delay_ms(10);
-    usart1.printf("echo\n");
+    //delay_ms(10);
+    //usart1.printf("echo\n");
+
+    //for(int i = 0; i < 32; i++) usart1.printf("%u ", (uint32_t)(CAN1->ESR >> (31 - i)) & 0x01);
+    //for(int i = 0; i < 32; i++) usart1.printf("%u ", (uint32_t)(CAN1->TSR >> (31 - i)) & 0x01);
+    //for(int i = 0; i < 32; i++) usart1.printf("%u ", (uint32_t)(CAN1->MSR >> (31 - i)) & 0x01);
+
+    //受信しているか
+    //usart1.printf("%u", (uint32_t)(CAN1->RF0R & 0x03));
+    //usart1.printf("%u", (uint32_t)(CAN1->RF1R & 0x03));
+
+    //レシーバとして動作
+    //usart1.printf("%u", (uint32_t)(CAN1->MSR >> CAN1_MSR_RXM_Pos) & 0x01);
+    //トランスミッタとして動作
+    //usart1.printf("%u", (uint32_t)(CAN1->MSR >> CAN1_MSR_TXM_Pos) & 0x01);
+
+    //usart1.printf("\n");
+        
 }
 
 void IO_Board::interrupt(void)
@@ -202,6 +218,22 @@ void IO_Board::interrupt(void)
     //base address 0x200 0x200台は使える
     //1枚当たり2個のID IO基板->制御基板　と　制御基板->IO基板
     //0x200(dipSw == 0), 0x202(dipSw == 1), 0x204(dipSw == 2), 0x206(dipSw == 3)...
-    can1.send(canId, 2, data);
+
+    static uint16_t cnt3 = 0;
+    if(++cnt3 >= 1000)
+    {
+        cnt3 = 0;
+        can1.send(canId, 2, data);
+        usart1.printf("can1 send\n");
+        //for(int i = 0; i < 32; i++) usart1.printf("%u ", (uint32_t)(CAN1->ESR >> (31 - i)) & 0x01);
+        //for(int i = 0; i < 32; i++) usart1.printf("%u ", (uint32_t)(CAN1->TSR >> (31 - i)) & 0x01);
+        //for(int i = 0; i < 32; i++) usart1.printf("%u ", (uint32_t)(CAN1->MSR >> (31 - i)) & 0x01);
+
+        //受信しているか
+        usart1.printf("%u", (uint32_t)(CAN1->RF0R & 0x03));
+        //usart1.printf("%u", (uint32_t)(CAN1->RF1R & 0x03));
+
+        usart1.printf("\n");
+    }
 
 }
