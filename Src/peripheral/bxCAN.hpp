@@ -60,9 +60,9 @@
 extern "C"
 {
 #endif
-void USB_HP_CAN_TX_IRQHandler(void);
-void USB_LP_CAN_RX0_IRQHandler(void);
-void CAN_RX1_IRQHandler(void);
+extern void USB_HP_CAN_TX_IRQHandler(void);
+extern void USB_LP_CAN_RX0_IRQHandler(void);
+extern void CAN_RX1_IRQHandler(void);
 #ifdef __cplusplus
 }
 #endif

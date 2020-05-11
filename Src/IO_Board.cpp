@@ -225,12 +225,17 @@ void IO_Board::interrupt(void)
         cnt3 = 0;
         can1.send(canId, 2, data);
         usart1.printf("can1 send\n");
+        //usart1.printf("ESR:");
         //for(int i = 0; i < 32; i++) usart1.printf("%u ", (uint32_t)(CAN1->ESR >> (31 - i)) & 0x01);
+        //usart1.printf("\n");
+        //usart1.printf("TSR:");
         //for(int i = 0; i < 32; i++) usart1.printf("%u ", (uint32_t)(CAN1->TSR >> (31 - i)) & 0x01);
+        //usart1.printf("\n");
+        //usart1.printf("MSR:");
         //for(int i = 0; i < 32; i++) usart1.printf("%u ", (uint32_t)(CAN1->MSR >> (31 - i)) & 0x01);
 
         //受信しているか
-        usart1.printf("%u", (uint32_t)(CAN1->RF0R & 0x03));
+        //usart1.printf("%u", (uint32_t)(CAN1->RF0R & 0x03)); //FMP0
         //usart1.printf("%u", (uint32_t)(CAN1->RF1R & 0x03));
 
         usart1.printf("\n");

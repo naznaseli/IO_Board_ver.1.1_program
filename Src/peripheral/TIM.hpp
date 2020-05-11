@@ -5,7 +5,8 @@
 #include "GPIO.hpp"
 
 #ifdef __cplusplus
-extern "C"{
+extern "C"
+{
 #endif
 extern void TIM1_IRQHandler(void);
 extern void TIM2_IRQHandler(void);

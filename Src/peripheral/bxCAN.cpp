@@ -1,24 +1,59 @@
 #include "bxCAN.hpp"
-#include <stdio.h>
+#include "../IO_Board.hpp"
+#include <stdint.h>
 
 #define writeBit(PERIPH, REG, SYM, VAL) (PERIPH->REG)=((PERIPH->REG)&(~PERIPH##_##REG##_##SYM##_Msk))|(VAL<<PERIPH##_##REG##_##SYM##_Pos)
 #define writeReg(PERIPH, REG, VAL)      (PERIPH->REG)
 #define readBit(PERIPH, REG, SYM)       (((PERIPH->REG)&PERIPH##_##REG##_##SYM##_Msk)>>PERIPH##_##REG##_##SYM##_Pos)
 #define readReg(PERIPH, REG)  ()
 
+void USB_HP_CAN_TX_IRQHandler(void);
+void USB_LP_CAN_RX0_IRQHandler(void);
+void CAN_RX1_IRQHandler(void);
+
 void USB_HP_CAN_TX_IRQHandler(void)
 {
-    printf("tx.\n");
+    usart1.printf("tx.\n");
 }
 
 void USB_LP_CAN_RX0_IRQHandler(void)
 {
-    printf("received0.\n");
+    //usart1.printf("received0.\n");
+    //CAN1->RF1R |= CAN_RF1R_RFOM1;
+    if (CAN1->RF0R & CAN_RF1R_FMP1)
+    {
+        usart1.printf("FMP");
+        usart1.printf("%u\n", (uint32_t)(CAN1->RF0R & 0x03)); //FMP0
+
+        //読み取り
+        //SID表示
+        usart1.printf("SID:%u\n", (uint32_t)(CAN1->sFIFOMailBox[0].RIR >> 21 & 0x7FF));
+        usart1.printf("length:%u\n", (uint32_t)(CAN1->sFIFOMailBox[0].RDTR & 0xF));
+        //usart1.printf("data:%u\n", (uint32_t)(CAN1->sFIFOMailBox[0].RDLR & 0xFFFF));
+
+        uint32_t test[2] = {0};
+        test[0] = (uint32_t)(CAN1->sFIFOMailBox[0].RDLR & 0xFF);
+        test[1] = (uint32_t)((CAN1->sFIFOMailBox[0].RDLR >> 8) & 0xFF);
+
+        usart1.printf("data0:%u\n", test[0]);
+        usart1.printf("data1:%u\n", test[1]);
+
+        //
+        CAN1->RF0R |= CAN_RF1R_RFOM1;
+    }
+    if (CAN1->RF0R & CAN_RF1R_FULL1)
+    {
+        usart1.printf("FULL\n");
+    }
+    if (CAN1->RF0R & CAN_RF1R_FOVR1)
+    {
+        usart1.printf("FOVR\n");
+    }
 }
 
 void CAN_RX1_IRQHandler(void)
 {
-    printf("received1.\n");
+    usart1.printf("received1.\n");
 }
 
 bxCAN::bxCAN(
@@ -90,14 +125,14 @@ void bxCAN::can1_setup(uint16_t baudrate)
     //baurate = 1/(500*1000)=12Tq=(BRP+1)*1/(36*1000000)より
     //BRP+1 = 6
     //CAN1->BTR &= ~(CAN_BTR_BRP | CAN_BTR_TS1 | CAN_BTR_TS2 | CAN_BTR_SJW);
-    //writeBit(CAN1, BTR, BRP, 6-1);
-    //writeBit(CAN1, BTR, TS1, 7-1);
-    //writeBit(CAN1, BTR, TS2, 4-1);
-    //writeBit(CAN1, BTR, SJW, 1-1);
-    writeBit(CAN1, BTR, BRP, 1-1);
-    writeBit(CAN1, BTR, TS1, 4-1);
-    writeBit(CAN1, BTR, TS2, 3-1);
-    writeBit(CAN1, BTR, SJW, 1-1);
+    writeBit(CAN1, BTR, BRP, 5);    //6Tq-1
+    writeBit(CAN1, BTR, TS1, 6);    //7Tq-1
+    writeBit(CAN1, BTR, TS2, 3);    //4Tq-1
+    writeBit(CAN1, BTR, SJW, 0);    //1Tq-1
+    //writeBit(CAN1, BTR, BRP, 1-1);    //1-1
+    //writeBit(CAN1, BTR, TS1, 4-1);    //4-1
+    //writeBit(CAN1, BTR, TS2, 3-1);    //3-1
+    //writeBit(CAN1, BTR, SJW, 1-1);    //1-1
     //CAN->MCR
     //自動再送信禁止
     //CAN1->MCR |= CAN_MCR_NART;
@@ -127,6 +162,7 @@ void bxCAN::can1_setup(uint16_t baudrate)
     CAN1->FA1R = 1;     //フィルタをアクティブに
 
     //フィルタの割り込み許可
+    //CAN1->IER |= CAN_IER_FMPIE0;
 
     //フィルタ設定完了
     CAN1->FMR &= ~(CAN_FMR_FINIT);
@@ -153,7 +189,9 @@ bxCAN::Mode bxCAN::modeNow(void)
         return SILENT;
     if(CANx->BTR & CAN_BTR_LBKM)
         return LOOPBACK;
-
+    //return NONE;
+    //なんか返せ
+    //TODO
 }
 
 void bxCAN::modeTransition(Mode mode)
