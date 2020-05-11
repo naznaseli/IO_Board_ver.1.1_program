@@ -35,8 +35,18 @@ void USB_LP_CAN_RX0_IRQHandler(void)
         test[0] = (uint32_t)(CAN1->sFIFOMailBox[0].RDLR & 0xFF);
         test[1] = (uint32_t)((CAN1->sFIFOMailBox[0].RDLR >> 8) & 0xFF);
 
-        usart1.printf("data0:%u\n", test[0]);
-        usart1.printf("data1:%u\n", test[1]);
+        usart1.printf("data0:");
+        for (int i = 0; i < 8; i++)
+        {
+            usart1.printf("%u", (test[0] >> i) & 0x01);
+        }
+        usart1.printf("\n");
+        usart1.printf("data0:");
+        for (int i = 0; i < 8; i++)
+        {
+            usart1.printf("%u", (test[1] >> i) & 0x01);
+        }
+        usart1.printf("\n");
 
         //
         CAN1->RF0R |= CAN_RF1R_RFOM1;
@@ -271,34 +281,42 @@ void bxCAN::can_transmit(CanMsg* txMessage)
         transmitMailbox = 2;
     }
 
-    if(txMessage->IDE == 0)
-    {   //STDID
-        CANx->sTxMailBox[transmitMailbox].TIR |=
-                        ((txMessage->StdId << CAN_TI0R_STID_Pos) |
-                        (txMessage->RTR << CAN_TI0R_RTR_Pos));
-    }
-    else
-    {   //EXTID
-        CANx->sTxMailBox[transmitMailbox].TIR |=
-                        ((txMessage->ExtId << CAN_TI0R_STID_Pos) |
-                        (txMessage->IDE << CAN_TI0R_IDE_Pos) |
-                        (txMessage->RTR << CAN_TI0R_RTR_Pos));
-    }
+    CANx->sTxMailBox[transmitMailbox].TIR = 0;
+    CANx->sTxMailBox[transmitMailbox].TIR |=
+                            ((txMessage->StdId << CAN_TI0R_STID_Pos) & CAN_TI0R_STID_Msk) |
+                            ((txMessage->ExtId << CAN_TI0R_EXID_Pos) & CAN_TI0R_EXID_Msk) |
+                            ((txMessage->IDE << CAN_TI0R_IDE_Pos) & CAN_TI0R_IDE_Msk) |
+                            ((txMessage->RTR << CAN_TI0R_RTR_Pos) & CAN_TI0R_RTR_Msk);
+    //if(txMessage->IDE == 0)
+    //{   //STDID
+    //    CANx->sTxMailBox[transmitMailbox].TIR |=
+    //                    ((txMessage->StdId << CAN_TI0R_STID_Pos) |
+    //                    (txMessage->RTR << CAN_TI0R_RTR_Pos));
+    //}
+    //else
+    //{   //EXTID
+    //    CANx->sTxMailBox[transmitMailbox].TIR |=
+    //                    ((txMessage->ExtId << CAN_TI0R_STID_Pos) |
+    //                    (txMessage->IDE << CAN_TI0R_IDE_Pos) |
+    //                    (txMessage->RTR << CAN_TI0R_RTR_Pos));
+    //}
 
     //DLC
-    CANx->sTxMailBox[transmitMailbox].TDTR = (txMessage->DLC);
+    CANx->sTxMailBox[transmitMailbox].TDTR = 0;
+    CANx->sTxMailBox[transmitMailbox].TDTR |= (txMessage->DLC & 0xF);
 
     //データ
     CANx->sTxMailBox[transmitMailbox].TDHR =
-            ((uint32_t)txMessage->Data[3] << CAN_TDH0R_DATA7_Pos) |
-            ((uint32_t)txMessage->Data[2] << CAN_TDH0R_DATA6_Pos) |
-            ((uint32_t)txMessage->Data[1] << CAN_TDH0R_DATA5_Pos) |
-            ((uint32_t)txMessage->Data[0] << CAN_TDH0R_DATA4_Pos);
+            ((uint32_t)txMessage->Data[7] << CAN_TDH0R_DATA7_Pos) & CAN_TDH0R_DATA7_Msk |
+            ((uint32_t)txMessage->Data[6] << CAN_TDH0R_DATA6_Pos) & CAN_TDH0R_DATA6_Msk |
+            ((uint32_t)txMessage->Data[5] << CAN_TDH0R_DATA5_Pos) & CAN_TDH0R_DATA5_Msk |
+            ((uint32_t)txMessage->Data[4] << CAN_TDH0R_DATA4_Pos) & CAN_TDH0R_DATA4_Msk;
+
     CANx->sTxMailBox[transmitMailbox].TDLR =
-            ((uint32_t)txMessage->Data[3] << CAN_TDL0R_DATA3_Pos) |
-            ((uint32_t)txMessage->Data[2] << CAN_TDL0R_DATA2_Pos) |
-            ((uint32_t)txMessage->Data[1] << CAN_TDL0R_DATA1_Pos) |
-            ((uint32_t)txMessage->Data[0] << CAN_TDL0R_DATA0_Pos);
+            (((uint32_t)txMessage->Data[3] << CAN_TDL0R_DATA3_Pos) & CAN_TDL0R_DATA3_Msk) |
+            (((uint32_t)txMessage->Data[2] << CAN_TDL0R_DATA2_Pos) & CAN_TDL0R_DATA2_Msk) |
+            (((uint32_t)txMessage->Data[1] << CAN_TDL0R_DATA1_Pos) & CAN_TDL0R_DATA1_Msk) |
+            (((uint32_t)txMessage->Data[0] << CAN_TDL0R_DATA0_Pos) & CAN_TDL0R_DATA0_Msk);
 
     //送信リクエスト
     CANx->sTxMailBox[transmitMailbox].TIR |= CAN_TI0R_TXRQ;

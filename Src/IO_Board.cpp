@@ -197,8 +197,8 @@ void IO_Board::interrupt(void)
     }
     
     uint8_t data[2];
-    data[0] = ioVal & 0x0F;
-    data[1] = (ioVal >> 8) & 0x0F;
+    data[0] = ioVal & 0xFF;
+    data[1] = (ioVal >> 8) & 0xFF;
 
     //debug print
 #if 0
