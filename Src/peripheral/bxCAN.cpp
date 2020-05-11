@@ -148,8 +148,8 @@ void bxCAN::can1_setup(uint16_t baudrate)
     //CAN1->MCR |= CAN_MCR_NART;
 
     //モード
-    CAN1->BTR |= CAN_BTR_LBKM;  //ループバックモード
-    CAN1->BTR |= CAN_BTR_SILM;  //サイレントモード
+    //CAN1->BTR |= CAN_BTR_LBKM;  //ループバックモード
+    //CAN1->BTR |= CAN_BTR_SILM;  //サイレントモード
     //writeBit(CAN1, BTR, LBKM);
     //writeBit(CAN1, BTR, SILM);
 

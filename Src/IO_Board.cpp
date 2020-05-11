@@ -156,21 +156,6 @@ void IO_Board::cycle(void)
     //led.toggle();
     //delay_ms(10);
     //usart1.printf("echo\n");
-
-    //for(int i = 0; i < 32; i++) usart1.printf("%u ", (uint32_t)(CAN1->ESR >> (31 - i)) & 0x01);
-    //for(int i = 0; i < 32; i++) usart1.printf("%u ", (uint32_t)(CAN1->TSR >> (31 - i)) & 0x01);
-    //for(int i = 0; i < 32; i++) usart1.printf("%u ", (uint32_t)(CAN1->MSR >> (31 - i)) & 0x01);
-
-    //受信しているか
-    //usart1.printf("%u", (uint32_t)(CAN1->RF0R & 0x03));
-    //usart1.printf("%u", (uint32_t)(CAN1->RF1R & 0x03));
-
-    //レシーバとして動作
-    //usart1.printf("%u", (uint32_t)(CAN1->MSR >> CAN1_MSR_RXM_Pos) & 0x01);
-    //トランスミッタとして動作
-    //usart1.printf("%u", (uint32_t)(CAN1->MSR >> CAN1_MSR_TXM_Pos) & 0x01);
-
-    //usart1.printf("\n");
         
 }
 
