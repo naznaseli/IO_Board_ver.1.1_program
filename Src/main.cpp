@@ -16,9 +16,7 @@ int main(void)
     usart1.printf("(0x%x)\n", board->canId);
 
     //ここにCANフィルタのセットアップ
-    //can1.setupFilter(bxCAN::ID_List, bxCAN::Dual16);
     can1.setFilter(512, bxCAN::ID_List, bxCAN::Dual16, 0, 0);
-    //can1.setupFilter();
 
     //timer start
     tim3.enableCount();

@@ -194,28 +194,37 @@ void bxCAN::can1_setup(uint16_t baudrate)
 //    CAN1->FMR &= ~(CAN_FMR_FINIT);
 //}
 
+//TODO: EXTIDへの対応
 //void bxCAN::setFilter(uint16_t sid)
 void bxCAN::setFilter(uint16_t sid, FilterMode mode, FilterScale scale, uint16_t filterNum, uint8_t fifo)
 {
     //フィルタ初期化
-    CAN1->FMR |= CAN_FMR_FINIT;
+    CANx->FMR |= CAN_FMR_FINIT;
 
     //フィルタバンクの構成
     //IDリストモード
-    CAN1->FM1R |= CAN_FM1R_FBM0;
+    //CANx->FM1R |= CAN_FM1R_FBM0;
+    CANx->FM1R |= (mode << filterNum);
 
     //16bit x 2
-    CAN1->FS1R &= ~(CAN_FS1R_FSC0);
+    //CANx->FS1R &= ~(CAN_FS1R_FSC0);
+    //writeBit(CAN1, FS1R, FSC0, scale);
+    if(scale == Dual16) CANx->FS1R &= ~(CAN_FS1R_FSC0 << filterNum);
+    else if(scale == Single32) CANx->FS1R |= (CAN_FS1R_FSC0 << filterNum);
 
     //フィルタをFIFO0に設定
-    CAN1->FFA1R &= ~(CAN_FFA1R_FFA0);
+    //CANx->FFA1R &= ~(CAN_FFA1R_FFA0);
+    if(fifo == 0) CANx->FFA1R &= ~(CAN_FFA1R_FFA0 << filterNum);
+    else if(fifo == 1) CANx->FFA1R |= (CAN_FFA1R_FFA0 << filterNum);
 
-    CAN1->sFilterRegister[0].FR1 = sid << 5;
+    //TODO: single32への対応
+    //TODO: extidへの対応
+    CANx->sFilterRegister[filterNum].FR1 = sid << 5;
 
-    CAN1->FA1R |= CAN_FA1R_FACT0;     //フィルタをアクティブに
+    CANx->FA1R |= CAN_FA1R_FACT0;     //フィルタをアクティブに
 
     //フィルタ設定完了
-    CAN1->FMR &= ~(CAN_FMR_FINIT);
+    CANx->FMR &= ~(CAN_FMR_FINIT);
 }
 
 bxCAN::Mode bxCAN::modeNow(void)
