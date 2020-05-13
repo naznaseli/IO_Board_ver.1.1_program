@@ -154,11 +154,11 @@ void bxCAN::can1_setup(uint16_t baudrate)
     //writeBit(CAN1, BTR, SILM);
 
     //フィルタ
-    CAN1->FMR = CAN_FMR_FINIT;
+    CAN1->FMR |= CAN_FMR_FINIT;
 
     //フィルタバンクの構成
     //IDリストモード
-    CAN1->FMR |= CAN_FM1R_FBM0;
+    CAN1->FM1R |= CAN_FM1R_FBM0;
 
     //16bit x 2
     CAN1->FS1R &= ~(CAN_FS1R_FSC0);
@@ -167,12 +167,8 @@ void bxCAN::can1_setup(uint16_t baudrate)
     CAN1->FFA1R &= ~(CAN_FFA1R_FFA0);
 
     CAN1->sFilterRegister[0].FR1 = 512 << 5;
-    //CAN1->FR = 512;   //フィルタそのもの = board->canId;
 
-    CAN1->FA1R = 1;     //フィルタをアクティブに
-
-    //フィルタの割り込み許可
-    //CAN1->IER |= CAN_IER_FMPIE0;
+    CAN1->FA1R |= CAN_FA1R_FACT0;     //フィルタをアクティブに
 
     //フィルタ設定完了
     CAN1->FMR &= ~(CAN_FMR_FINIT);
