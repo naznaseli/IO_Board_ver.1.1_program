@@ -101,6 +101,27 @@ public:
     void send(uint16_t id, uint8_t length, uint8_t data[8]);
     //void recv();
     //void abort();
+
+    //:**********************************************************************
+    //filter
+    enum FilterMode
+    {
+        ID_Mask, ID_List
+    };
+    enum FilterScale
+    {
+        Dual16, Single32
+    };
+
+    //16x2 or 32
+    //id mask or id list
+    //void setupFilter(FilterMode mode, FilterScale scale);
+
+    //sid
+    //fifo0 or fifo1
+    //フィルタ番号
+    //void setFilter(uint16_t sid, uint16_t filterNum, uint16_t fifo);
+    void setFilter(uint16_t sid, FilterMode mode, FilterScale scale, uint16_t filterNum, uint8_t fifo);
     
 private:
     CAN_TypeDef* CANx;
@@ -115,6 +136,7 @@ private:
     void modeTransition(Mode mode);
     //今のCANのモードを返す
     Mode modeNow(void);
+
 
     void can_transmit(CanMsg* txMessage);
 
