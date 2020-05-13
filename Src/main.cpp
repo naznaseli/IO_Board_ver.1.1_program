@@ -5,13 +5,14 @@ int main(void)
     board = new IO_Board();
     board->setupPeripheral();
 
-    usart1.printf("peripheral initialized\n");
+    //usart1.printf("peripheral initialized\n");
+    port1.printf("peripheral initialized\n");
 
     //DIPスイッチ読み取り
     uint8_t dipSw = 15 - ((dip[0].read()) | (dip[1].read() << 1) | (dip[2].read() << 2) | (dip[3].read() << 3));
     board->canId = BASE_ADDRESS_IO + dipSw * 2;
-    usart1.printf("can id = %u", board->canId);
-    usart1.printf("(0x%x)\n", board->canId);
+    //usart1.printf("can id = %u", board->canId);
+    port1.printf("can id = %u(0x%x)\n", board->canId, board->canId);
 
     //can1.setFilter(board->canId + 1, bxCAN::ID_List, bxCAN::Dual16, 0, 0);
     can1.setFilter(512, bxCAN::ID_List, bxCAN::Dual16, 0, 0);

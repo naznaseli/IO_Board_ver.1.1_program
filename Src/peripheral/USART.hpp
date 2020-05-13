@@ -5,6 +5,17 @@
 #include "RCC.hpp"
 #include "GPIO.hpp"
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+void USART1_IRQHandler(void);
+void USART2_IRQHandler(void);
+void USART3_IRQHandler(void);
+#ifdef __cplusplus
+}
+#endif
+
 class USART
 {
 public:
@@ -32,9 +43,26 @@ public:
     void enableClock(void);
     void disableClock(void);
     void setRemap(void);
-    void enableUsart(void);
+
+    bool isEnable(void);
+    void enable(void);
+    void disable(void);
+
+    bool isEnableTx(void);
     void enableTx(void);
+    void disableTx(void);
+
+    bool isEnableRx(void);
     void enableRx(void);
+    void disableRx(void);
+
+    bool isEnableTxI(void);
+    void enableTxI(void);
+    void disableTxI(void);
+    
+    bool isEnableRxI(void);
+    void enableRxI(void);
+    void disableRxI(void);
     void clear(void);
 
     int putchar_(uint8_t c);

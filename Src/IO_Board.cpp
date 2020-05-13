@@ -8,6 +8,8 @@ TIM tim3;
 USART usart1;
 bxCAN can1;
 
+//SerialPort port1;
+
 //__io_getchar(void);
 //__io_putchar(int ch);
 
@@ -153,10 +155,16 @@ size_t IO_Board::millis(void)
 void IO_Board::cycle(void)
 {
     IWDG_Reset();
-    //led.toggle();
     //delay_ms(10);
     //usart1.printf("echo\n");
         
+
+    //static uint16_t cnt = 0;
+    //if(++cnt >= 10000)
+    //{
+    //    cnt = 0;
+    //    port1.printf("cycle\n");
+    //}
 }
 
 void IO_Board::interrupt(void)
@@ -165,13 +173,18 @@ void IO_Board::interrupt(void)
     if (m_delayCnt) m_delayCnt--;
     if (m_buzzerCnt) m_buzzerCnt--;
 
-    //usart1.printf("%u\n", m_delayCnt);
-
     static uint16_t cnt = 0;
     if (++cnt >= 100)
     {
         cnt = 0;
         led.toggle();
+    }
+
+    //送信バッファ吐き出し
+    //空　かつ　イネーブル
+    if(!port1.tx.isEmpty() && !usart1.isEnableTxI())
+    {
+        usart1.enableTxI();
     }
     
     //センサ読み取り
@@ -209,7 +222,7 @@ void IO_Board::interrupt(void)
     {
         cnt3 = 0;
         can1.send(canId, 2, data);
-        usart1.printf("can1 send\n");
+        port1.printf("can1 send\n");
         //usart1.printf("ESR:");
         //for(int i = 0; i < 32; i++) usart1.printf("%u ", (uint32_t)(CAN1->ESR >> (31 - i)) & 0x01);
         //usart1.printf("\n");
@@ -223,7 +236,7 @@ void IO_Board::interrupt(void)
         //usart1.printf("%u", (uint32_t)(CAN1->RF0R & 0x03)); //FMP0
         //usart1.printf("%u", (uint32_t)(CAN1->RF1R & 0x03));
 
-        usart1.printf("\n");
+        port1.printf("\n");
     }
 
 }

@@ -58,7 +58,9 @@ void USART::setup(
         //USART1はデフォルトでremapされている(?)
         //2019/05/08　データシート見たけどリセット状態で0って書いてある
         AFIO->MAPR |= AFIO_MAPR_USART1_REMAP;
-    }else{
+    }
+    else
+    {
         AFIO->MAPR &= ~(AFIO_MAPR_USART1_REMAP);
     }
     //AFIO->MAPR |= AFIO_MAPR_USART1_REMAP;
@@ -69,15 +71,102 @@ void USART::setup(
     //クロック設定と設定ボーレートの値からBRRの値を算出
     if(USARTx == USART1)
     {
+        //設定順序注意(NVICとUEが怪しい)
         USARTx->BRR = 0x00000271;   //72*100000/115200 = 625 = 0x271
+
+        //USARTx->CR1 |= USART_CR1_TCIE;
+        //USARTx->CR1 |= USART_CR1_TXEIE;
+        NVIC_EnableIRQ(USART1_IRQn);
         
-        USARTx->CR1 |= USART_CR1_UE;
-        //enableUSART();
-        USARTx->CR1 |= USART_CR1_TE;
-        //enableTx();
-        USARTx->CR1 |= USART_CR1_RE;
-        //enableRx();
+        //USARTx->CR1 |= USART_CR1_TE;
+        enableTx();
+
+        //USARTx->CR1 |= USART_CR1_RE;
+        enableRx();
+
+        //USARTx->CR1 |= USART_CR1_UE;
+        enable();
     }
+}
+
+bool USART::isEnable(void)
+{
+    if(USARTx->CR1 & USART_CR1_UE) return true;
+    else return false;
+}
+
+void USART::enable(void)
+{
+    USARTx->CR1 |= USART_CR1_UE;
+}
+
+void USART::disable(void)
+{
+    USARTx->CR1 &= ~(USART_CR1_UE);
+}
+
+bool USART::isEnableTx(void)
+{
+    if(USARTx->CR1 & USART_CR1_TE) return true;
+    else return false;
+}
+
+void USART::enableTx(void)
+{
+    USARTx->CR1 |= USART_CR1_TE;
+}
+
+void USART::disableTx(void)
+{
+    USARTx->CR1 &= ~(USART_CR1_TE);
+}
+
+bool USART::isEnableRx(void)
+{
+    if(USARTx->CR1 & USART_CR1_RE) return true;
+    else return false;
+}
+
+void USART::enableRx(void)
+{
+    USARTx->CR1 |= USART_CR1_RE;
+}
+
+void USART::disableRx(void)
+{
+    USARTx->CR1 &= ~(USART_CR1_RE);
+}
+
+bool USART::isEnableTxI(void)
+{
+    if(USARTx->CR1 & USART_CR1_TXEIE) return true;
+    else return false;
+}
+
+void USART::enableTxI(void)
+{
+    USARTx->CR1 |= USART_CR1_TXEIE;
+}
+
+void USART::disableTxI(void)
+{
+    USARTx->CR1 &= ~(USART_CR1_TXEIE);
+}
+
+bool USART::isEnableRxI(void)
+{
+    if(USARTx->CR1 & USART_CR1_TXEIE) return true;
+    else return false;
+}
+
+void USART::enableRxI(void)
+{
+    USARTx->CR1 |= USART_CR1_RXNEIE;
+}
+
+void USART::disableRxI(void)
+{
+    USARTx->CR1 &= ~(USART_CR1_RXNEIE);
 }
 
 void USART::remap(

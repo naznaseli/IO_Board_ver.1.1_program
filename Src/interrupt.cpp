@@ -32,35 +32,40 @@ void USB_HP_CAN_TX_IRQHandler(void)
 
 void USB_LP_CAN_RX0_IRQHandler(void)
 {
-    //usart1.printf("received0.\n");
-    //CAN1->RF1R |= CAN_RF1R_RFOM1;
     if (CAN1->RF0R & CAN_RF1R_FMP1)
     {
-        usart1.printf("FMP");
-        usart1.printf("%u\n", (uint32_t)(CAN1->RF0R & 0x03)); //FMP0
+        //usart1.printf("FMP");
+        //usart1.printf("%u\n", (uint32_t)(CAN1->RF0R & 0x03)); //FMP0
 
         //読み取り
         //SID表示
-        usart1.printf("SID:%u\n", (uint32_t)(CAN1->sFIFOMailBox[0].RIR >> 21 & 0x7FF));
-        usart1.printf("length:%u\n", (uint32_t)(CAN1->sFIFOMailBox[0].RDTR & 0xF));
-        //usart1.printf("data:%u\n", (uint32_t)(CAN1->sFIFOMailBox[0].RDLR & 0xFFFF));
+        //usart1.printf("SID:%u\n", (uint32_t)(CAN1->sFIFOMailBox[0].RIR >> 21 & 0x7FF));
+        port1.printf("SID:%u\n", (uint32_t)(CAN1->sFIFOMailBox[0].RIR >> 21 & 0x7FF));
+        //usart1.printf("length:%u\n", (uint32_t)(CAN1->sFIFOMailBox[0].RDTR & 0xF));
+        port1.printf("length:%u\n", (uint32_t)(CAN1->sFIFOMailBox[0].RDTR & 0xF));
 
         uint32_t test[2] = {0};
         test[0] = (uint32_t)(CAN1->sFIFOMailBox[0].RDLR & 0xFF);
         test[1] = (uint32_t)((CAN1->sFIFOMailBox[0].RDLR >> 8) & 0xFF);
 
-        usart1.printf("data0:");
+        //usart1.printf("data0:");
+        port1.printf("data0:");
         for (int i = 0; i < 8; i++)
         {
-            usart1.printf("%u", (test[0] >> i) & 0x01);
+            //usart1.printf("%u", (test[0] >> i) & 0x01);
+            port1.printf("%u", (test[0] >> i) & 0x01);
         }
-        usart1.printf("\n");
-        usart1.printf("data0:");
+        //usart1.printf("\n");
+        port1.printf("\n");
+        //usart1.printf("data0:");
+        port1.printf("data0:");
         for (int i = 0; i < 8; i++)
         {
-            usart1.printf("%u", (test[1] >> i) & 0x01);
+            //usart1.printf("%u", (test[1] >> i) & 0x01);
+            port1.printf("%u", (test[1] >> i) & 0x01);
         }
-        usart1.printf("\n");
+        //usart1.printf("\n");
+        port1.printf("\n");
 
         CAN1->RF0R |= CAN_RF1R_RFOM1;
     }

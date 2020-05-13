@@ -9,6 +9,8 @@
 #include "./peripheral/bxCAN.hpp"
 #include "./peripheral/IWDG.hpp"
 
+#include "serialport.hpp"
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -30,6 +32,8 @@ extern GPIO swdio, swclk;
 extern TIM tim3;
 extern USART usart1;
 extern bxCAN can1;
+
+//extern SerialPort port1;
 
 class IO_Board
 {
@@ -65,22 +69,6 @@ private:
     void TIM_Setup(void);
     void USART_Setup(void);
     void bxCAN_Setup(void);
-    //void IWDG_Setup(void);
-};
-
-//! 割り込み禁止
-class ProtectInterrupt
-{
-public:
-    ProtectInterrupt()
-    {
-        //__disable_irq();
-    };
-
-    ~ProtectInterrupt()
-    {
-        //__enable_irq();
-    };
 };
 
 extern IO_Board* board;
