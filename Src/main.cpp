@@ -13,11 +13,8 @@ int main(void)
     usart1.printf("can id = %u", board->canId);
     usart1.printf("(0x%x)\n", board->canId);
 
-    //ここにCANフィルタのセットアップ
     //can1.setFilter(board->canId + 1, bxCAN::ID_List, bxCAN::Dual16, 0, 0);
     can1.setFilter(512, bxCAN::ID_List, bxCAN::Dual16, 0, 0);
-    //filter id: board->canId + 1
-    //can1.setupFilter();
 
     //timer start
     tim3.enableCount();

@@ -62,7 +62,6 @@ void USB_LP_CAN_RX0_IRQHandler(void)
         }
         usart1.printf("\n");
 
-        //
         CAN1->RF0R |= CAN_RF1R_RFOM1;
     }
     if (CAN1->RF0R & CAN_RF1R_FULL1)
