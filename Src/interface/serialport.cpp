@@ -1,64 +1,9 @@
 #include "serialport.hpp"
 #include <stdio.h>
 #include <stdarg.h>
-
-#include "interrupt.hpp"
+#include "../interrupt.hpp"
 
 SerialPort port1;
-
-void USART1_IRQHandler(void)
-{
-    switch(USART1->SR)
-    {
-    case USART_SR_TC:       //送信完了(TEI)
-        USART1->SR &= ~(USART_SR_TC);
-        usart1.disableTxI();
-        break;
-    case USART_SR_TXE:      //送信データレジスタエンプティ(TXI)
-        static uint8_t data;
-        port1.tx.dequeue(&data);
-        USART1->DR = data;
-        if(port1.tx.isEmpty())
-        {
-            //SCI_LastTX(1);
-            usart1.enableTxI();
-            USART1->CR1 &= ~(USART_CR1_TXEIE);
-        }
-
-        break;
-    case USART_SR_RXNE:     //受信データ読み出し可能
-        USART1->SR &= ~(USART_SR_RXNE);
-        //port1.rx.enqueue(USART1->DR);
-        break;
-    default:
-        USART1->SR = 0;
-    }
-}
-
-void USART2_IRQHandler(void)
-{
-    switch(USART2->SR)
-    {
-    case USART_SR_TC:
-        USART2->SR &= ~(USART_SR_TC);
-        break;
-    case USART_SR_TXE:
-
-        break;
-    case USART_SR_RXNE:
-        USART2->SR &= ~(USART_SR_RXNE);
-        //port2.rx.enqueue();
-        break;
-    default:
-        USART2->SR = 0;
-    }
-
-}
-
-void USART3_IRQHandler(void)
-{
-
-}
 
 SerialPort::SerialPort()
 {
@@ -146,21 +91,6 @@ ByteQueue::ByteQueue()
     clear();
 }
 
-bool ByteQueue::isInterruptUnlocked(void)
-{
-    return false;
-}
-
-void ByteQueue::lockInterrupt(void)
-{
-
-}
-
-void ByteQueue::unlockInterrupt(void)
-{
-
-}
-
 bool ByteQueue::enqueue(uint8_t data)
 {
     ProtectInterrupt pi;
@@ -220,13 +150,14 @@ bool ByteQueue::isFull(void)
 
 void ByteQueue::clear(void)
 {
-    bool intLock = isInterruptUnlocked();
+    ProtectInterrupt pi;
+    //bool intLock = isInterruptUnlocked();
 
-    if(intLock) lockInterrupt();
+    //if(intLock) lockInterrupt();
     tail = 0;
     front = 0;
     storedSize = 0;
-    if(intLock) unlockInterrupt();
+    //if(intLock) unlockInterrupt();
 }
 
 bool ByteQueue::peak(uint8_t* data)

@@ -78,15 +78,28 @@ void USART::setup(
         //USARTx->CR1 |= USART_CR1_TXEIE;
         NVIC_EnableIRQ(USART1_IRQn);
         
-        //USARTx->CR1 |= USART_CR1_TE;
-        enableTx();
-
-        //USARTx->CR1 |= USART_CR1_RE;
-        enableRx();
-
-        //USARTx->CR1 |= USART_CR1_UE;
-        enable();
     }
+
+    if(USARTx == USART2)
+    {
+        //USARTx->BRR = 0x0;
+        NVIC_EnableIRQ(USART2_IRQn);
+    }
+
+    if(USARTx == USART3)
+    {
+        //USARTx->BRR = 0x0;
+        NVIC_EnableIRQ(USART2_IRQn);
+    }
+
+    //USARTx->CR1 |= USART_CR1_TE;
+    enableTx();
+
+    //USARTx->CR1 |= USART_CR1_RE;
+    enableRx();
+
+    //USARTx->CR1 |= USART_CR1_UE;
+    enable();
 }
 
 bool USART::isEnable(void)

@@ -3,6 +3,9 @@
 
 //各種(受信、送信、周期)割り込みの内容をここに記述
 
+//:**********************************************************************
+//! TIM
+//:**********************************************************************
 //void TIM1_IRQHandler(void)
 //{
 //    TIM1->SR = 0;
@@ -25,6 +28,66 @@ void TIM3_IRQHandler(void)
 //    TIM4->SR = 0;
 //}
 
+//:**********************************************************************
+//! USART
+//:**********************************************************************
+void USART1_IRQHandler(void)
+{
+    switch(USART1->SR)
+    {
+    case USART_SR_TC:       //送信完了(TEI)
+        USART1->SR &= ~(USART_SR_TC);
+        usart1.disableTxI();
+        break;
+    case USART_SR_TXE:      //送信データレジスタエンプティ(TXI)
+        static uint8_t data;
+        port1.tx.dequeue(&data);
+        USART1->DR = data;
+        if(port1.tx.isEmpty())
+        {
+            //SCI_LastTX(1);
+            usart1.enableTxI();
+            USART1->CR1 &= ~(USART_CR1_TXEIE);
+        }
+
+        break;
+    case USART_SR_RXNE:     //受信データ読み出し可能
+        USART1->SR &= ~(USART_SR_RXNE);
+        //port1.rx.enqueue(USART1->DR);
+        break;
+    default:
+        USART1->SR = 0;
+    }
+}
+
+//void USART2_IRQHandler(void)
+//{
+//    switch(USART2->SR)
+//    {
+//    case USART_SR_TC:
+//        USART2->SR &= ~(USART_SR_TC);
+//        break;
+//    case USART_SR_TXE:
+//
+//        break;
+//    case USART_SR_RXNE:
+//        USART2->SR &= ~(USART_SR_RXNE);
+//        //port2.rx.enqueue();
+//        break;
+//    default:
+//        USART2->SR = 0;
+//    }
+//
+//}
+//
+//void USART3_IRQHandler(void)
+//{
+//
+//}
+
+//:**********************************************************************
+//! CAN
+//:**********************************************************************
 void USB_HP_CAN_TX_IRQHandler(void)
 {
     usart1.printf("tx.\n");
@@ -39,10 +102,8 @@ void USB_LP_CAN_RX0_IRQHandler(void)
 
         //読み取り
         //SID表示
-        //usart1.printf("SID:%u\n", (uint32_t)(CAN1->sFIFOMailBox[0].RIR >> 21 & 0x7FF));
-        port1.printf("SID:%u\n", (uint32_t)(CAN1->sFIFOMailBox[0].RIR >> 21 & 0x7FF));
-        //usart1.printf("length:%u\n", (uint32_t)(CAN1->sFIFOMailBox[0].RDTR & 0xF));
-        port1.printf("length:%u\n", (uint32_t)(CAN1->sFIFOMailBox[0].RDTR & 0xF));
+        //usart1.printf("SID:%u, length:%u\n", (uint32_t)(CAN1->sFIFOMailBox[0].RIR >> 21 & 0x7FF), (uint32_t)(CAN1->sFIFOMailBox[0].RDTR & 0xF));
+        port1.printf("SID:%u, length:%u\n", (uint32_t)(CAN1->sFIFOMailBox[0].RIR >> 21 & 0x7FF), (uint32_t)(CAN1->sFIFOMailBox[0].RDTR & 0xF));
 
         uint32_t test[2] = {0};
         test[0] = (uint32_t)(CAN1->sFIFOMailBox[0].RDLR & 0xFF);

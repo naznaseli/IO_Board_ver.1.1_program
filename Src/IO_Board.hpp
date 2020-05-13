@@ -8,8 +8,7 @@
 #include "./peripheral/USART.hpp"
 #include "./peripheral/bxCAN.hpp"
 #include "./peripheral/IWDG.hpp"
-
-#include "serialport.hpp"
+#include "./interface/serialport.hpp"
 
 #ifdef __cplusplus
 extern "C"

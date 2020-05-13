@@ -1,6 +1,6 @@
 #pragma once
-//#include "./peripheral/USART.hpp"
-#include "IO_Board.hpp"
+//#include "../peripheral/USART.hpp"
+#include "../peripheral/USART.hpp"
 
 //SerialPortクラス内部でキューの実装
 //DMAはまた考える

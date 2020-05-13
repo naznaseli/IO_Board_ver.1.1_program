@@ -38,12 +38,14 @@ BUILD_DIR = build
 C_SOURCES =  \
 Drivers/CMSIS/Device/ST/STM32F1xx/Source/Templates/system_stm32f1xx.c \
 $(wildcard src/*.c) \
-$(sildcard src/peripheral/*.c)
+$(sildcard src/peripheral/*.c) \
+$(sildcard src/interface/*.c)
 
 # C++ sources
 CPP_SOURCES = \
 $(wildcard src/*.cpp) \
-$(wildcard src/peripheral/*.cpp)
+$(wildcard src/peripheral/*.cpp) \
+$(wildcard src/interface/*.cpp)
 
 # ASM sources
 ASM_SOURCES =  \

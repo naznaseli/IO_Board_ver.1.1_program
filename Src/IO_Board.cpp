@@ -8,8 +8,6 @@ TIM tim3;
 USART usart1;
 bxCAN can1;
 
-//SerialPort port1;
-
 //__io_getchar(void);
 //__io_putchar(int ch);
 
