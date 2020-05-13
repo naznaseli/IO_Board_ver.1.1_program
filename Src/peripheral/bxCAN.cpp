@@ -179,21 +179,6 @@ void bxCAN::can1_setup(uint16_t baudrate)
     modeTransition(NORMAL);
 }
 
-//void bxCAN::setupFilter(FilterMode mode, FilterScale scale)
-//{
-//    //フィルタ初期化
-//    CAN1->FMR |= CAN_FMR_FINIT;
-//
-//    //IDリストモード
-//    CAN1->FM1R |= CAN_FM1R_FBM0;
-//
-//    //16bit x 2
-//    CAN1->FS1R &= ~(CAN_FS1R_FSC0);
-//
-//    //フィルタ設定完了
-//    CAN1->FMR &= ~(CAN_FMR_FINIT);
-//}
-
 //TODO: EXTIDへの対応
 //void bxCAN::setFilter(uint16_t sid)
 void bxCAN::setFilter(uint16_t sid, FilterMode mode, FilterScale scale, uint16_t filterNum, uint8_t fifo)
