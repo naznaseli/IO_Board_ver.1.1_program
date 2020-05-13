@@ -82,3 +82,5 @@ public:
         //__enable_irq();
     };
 };
+
+extern IO_Board* board;

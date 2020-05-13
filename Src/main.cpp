@@ -1,7 +1,5 @@
 #include "IO_Board.hpp"
 
-IO_Board* board;
-
 int main(void)
 {
     board = new IO_Board();
@@ -18,6 +16,8 @@ int main(void)
     //ここにCANフィルタのセットアップ
     //can1.setFilter(board->canId + 1, bxCAN::ID_List, bxCAN::Dual16, 0, 0);
     can1.setFilter(512, bxCAN::ID_List, bxCAN::Dual16, 0, 0);
+    //filter id: board->canId + 1
+    //can1.setupFilter();
 
     //timer start
     tim3.enableCount();
@@ -26,9 +26,4 @@ int main(void)
     {
         board->cycle();
     }
-}
-
-void interrupt(void)
-{
-    board->interrupt();
 }

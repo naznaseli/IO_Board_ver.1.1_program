@@ -227,3 +227,5 @@ void IO_Board::interrupt(void)
     }
 
 }
+
+IO_Board* board;

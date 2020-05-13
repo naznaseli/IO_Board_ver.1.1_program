@@ -5,8 +5,6 @@
 #include "RCC.hpp"
 #include "GPIO.hpp"
 
-#define CAN1_MCR_INRQ_Pos   CAN_MCR_INRQ_Pos
-#define CAN1_MCR_INRQ_Msk   CAN_MCR_INRQ_Msk
 #define CAN1_MCR_SLEEP_Pos  CAN_MCR_SLEEP_Pos
 #define CAN1_MCR_SLEEP_Msk  CAN_MCR_SLEEP_Msk
 #define CAN1_MCR_TXFP_Pos   CAN_MCR_SLEEP_Pos
@@ -63,9 +61,13 @@ extern "C"
 extern void USB_HP_CAN_TX_IRQHandler(void);
 extern void USB_LP_CAN_RX0_IRQHandler(void);
 extern void CAN_RX1_IRQHandler(void);
+extern void CAN_SCE_IRQHandler(void);
 #ifdef __cplusplus
 }
 #endif
+
+#define CAN1_MCR_INRQ_Pos   CAN_MCR_INRQ_Pos
+#define CAN1_MCR_INRQ_Msk   CAN_MCR_INRQ_Msk
 
 typedef struct
 {
